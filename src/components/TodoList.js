@@ -32,13 +32,13 @@ class TodoList extends Component {
                 key={todo.id} 
                 onClick={this.delete.bind(this, todo)}
             >
-                {todo.id}
+                {todo.title}
             </li>
         ))
 
         return (
             <div>
-                <h1>Todos</h1>
+                <h1>Todos {filteredTodos.length} </h1>
                 <input 
                     className="create"
                     onKeyPress={this.create.bind(this)}

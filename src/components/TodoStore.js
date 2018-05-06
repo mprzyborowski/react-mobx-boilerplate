@@ -36,16 +36,27 @@ class TodoStore {
         return this.todos.filter(todo => !this.filter  || matchesFilter.test(todo.value))
     }
 
-    create(value) {
-        this.todos.push(new Todo(value));
-        createPost(value, () => {
-            console.log('created');
+    @action create(value) {
+        let obj = new Todo(value);
+        this.todos.push(obj)
+        axios.post(`${ROOT_URL}/posts${API_KEY}`, { title: value }).then(res => {
+            Object.assign(obj, res.data)
+        }).catch(res => {
+            alert('error, refresh data');  
+            setTimeout(() => {
+                this.fetchPosts();
+            }, 200);
         });
     }
 
-    delete(todo) {
+    @action delete(todo) {
         this.todos.splice(this.todos.indexOf(todo),1);
-        const request = axios.delete(`${ROOT_URL}/posts/${todo.id}${API_KEY}`);
+        const request = axios.delete(`${ROOT_URL}/posts/${todo.id}${API_KEY}`).catch(res => {
+            alert('error, refresh data');  
+            setTimeout(() => {
+                this.fetchPosts();
+            }, 200);
+        });
     }
 
 }

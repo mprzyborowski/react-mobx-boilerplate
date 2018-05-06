@@ -1,14 +1,16 @@
 import { observable } from "mobx";
 
 class Todo {
-    @observable value
     @observable id
-    @observable complete
+    @observable title
+    @observable content
+    @observable categories
 
-    constructor(value) {
-        this.value = value
-        this.id = Date.now()
-        this.complete = false
+    constructor(title) {
+        this.id = Math.random()
+        this.title = title
+        this.content = 'cont'
+        this.categories = 'cat'
     }
 }
 
