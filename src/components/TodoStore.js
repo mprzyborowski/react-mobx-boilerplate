@@ -1,15 +1,55 @@
-import { observable, computed } from "mobx";
+import { observable, computed, action } from "mobx";
+import store from 'store';
+import axios from 'axios';
+import Todo from './Todo';
+
+
+const ROOT_URL = 'http://reduxblog.herokuapp.com/api';
+const API_KEY = '?key=asdasdfdsasdfv2e3r4egf';
+
+
+
+function createPost(values, callback) {
+    const request = axios.post(`${ROOT_URL}/posts${API_KEY}`, values)
+    .then(() => callback());
+}
+
+function fetchPost(id) {
+    const request = axios.get(`${ROOT_URL}/posts/${id}${API_KEY}`);
+}
+
+
 
 class TodoStore {
-    @observable todos = ["get coffe"]
+
+    @observable todos = []
     @observable filter = ""
+
+    @action fetchPosts() {
+        return axios.get(`${ROOT_URL}/posts${API_KEY}`).then(res => {
+            this.todos = res.data;
+        })
+    }
 
     @computed get filteredTodos() {
         var matchesFilter = new RegExp(this.filter, "i")
-        return this.todos.filter(todo => !this.filter  || matchesFilter.test(todo))
+        return this.todos.filter(todo => !this.filter  || matchesFilter.test(todo.value))
     }
+
+    create(value) {
+        this.todos.push(new Todo(value));
+        createPost(value, () => {
+            console.log('created');
+        });
+    }
+
+    delete(todo) {
+        this.todos.splice(this.todos.indexOf(todo),1);
+        const request = axios.delete(`${ROOT_URL}/posts/${todo.id}${API_KEY}`);
+    }
+
 }
 
-var store = window.store =  new TodoStore
+export default new TodoStore
 
-export default store
+
